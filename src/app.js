@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import auth from "./routes/auth.js";
+import patient from "./routes/patient.js";
 import hospitalRoutes from "./routes/hospital.js";
 import staffRoutes from "./routes/staff.js";
 
@@ -31,6 +32,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
 app.use("/auth",auth);
+app.use("/patient",patient);
 app.use("/hospital", hospitalRoutes);
 app.use("/staff", staffRoutes);
 
