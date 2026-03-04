@@ -3,19 +3,17 @@ import { supabase } from "../utils/supabase.js";
 
 export const bookAppointment= async(details) =>{
     const {pref_doctor,hospital_id,isEmergency,department,bookingDate,patient_id} = details;
-    const now = new Date(bookingDate);
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
+    const opdStart = new Date(`${bookingDate}T09:00:00+05:30`);
+    const opdEnd = new Date(`${bookingDate}T18:00:00+05:30`);
+    opdEnd.setHours(18, 0, 0, 0);
 
     const { data:appointments, error:error1 } = await supabase
     .from('Appointment')
     .select()
     .eq('hospital_id',hospital_id)
     .eq('status','pending')
-    .gte('booked_for', startOfDay.toISOString())
-    .lt('booked_for', endOfDay.toISOString());
+    .gte('booked_for', opdStart.toISOString())
+    .lt('booked_for', opdEnd.toISOString());
 
     if(error1) throw error1;
 
@@ -60,7 +58,7 @@ export const bookAppointment= async(details) =>{
     }
 
     const minutesToAdd = doctorLoad[assigned_doctor] * 10;
-    const tentativeTime = new Date(now.getTime() + minutesToAdd * 60000);
+    const tentativeTime = new Date(opdStart.getTime() + minutesToAdd * 60000);
     const tentativeISO = tentativeTime.toISOString();
 
     const {data,error} = await supabase
@@ -71,26 +69,31 @@ export const bookAppointment= async(details) =>{
         hospital_id:hospital_id,
         isEmergency:isEmergency,
         patient_id:patient_id,
-        booked_for:bookingDate,
+        booked_for:tentativeISO,
     })
     .select();
 
     if(error) throw error;
     return {
         message:"Appointment booked successfully",
-        tentative_time:tentativeISO,
         details:data
     }
 };
 
-export const cancelAppointment = async(AppointmentId) =>{
+export const cancelAppointment = async(AppointmentId,patient_id) =>{
     const {data,error} = await supabase
     .from('Appointment')
     .delete()
     .eq('id', AppointmentId)
+    .eq('patient_id',patient_id)
     .select();
 
     if(error) throw error;
+    if(!data || data.length===0){
+        return {
+            message:"No such appointment exists."
+        }
+    }
 
     return{
         message:"Appointment deleted successfully.",
@@ -99,32 +102,28 @@ export const cancelAppointment = async(AppointmentId) =>{
 };
 
 export const updateAppointment = async(AppointmentId,details) =>{
-    const {pref_doctor,assigned_doctor,hospital_id,isEmergency,department,bookingDate,patient_id} = details;
-    const now = new Date();
-    const bookingDate_ = new Date(bookingDate);
-    if (isNaN(bookingDate_.getTime())) {
-    throw new Error("Invalid booking date");
+    const patient_id=details.patient_id;
+    try{
+        await cancelAppointment(AppointmentId,patient_id);
+        const updAppt = await bookAppointment(details);
+        return{
+            message:"Appointment Updated Successfully.",
+            details:updAppt.details
+        }
+    }catch(error){
+        throw error;
     }
-    if (bookingDate_ <= now) {
-    throw new Error("Booking date must be in the future");
-    }
+};
 
-    const {data,error} = await supabase
-    .from('Appointment')
-    .update({
-        pref_doctor:pref_doctor,
-        assigned_doctor:assigned_doctor,
-        hospital_id:hospital_id,
-        isEmergency:isEmergency,
-        patient_id:patient_id,
-        booked_for:bookingDate,
-    })
-    .eq('id',AppointmentId)
-    .select();
+export const getAppointments = async(patient_id)=>{
+    const { data, error } = await supabase
+    .from('patient_appointment_view')
+    .select()
 
     if(error) throw error;
+
     return {
-        message:"Appointment updated successfully",
-        details:data
+        message:"Appointments fetched successfully.",
+        data:data
     }
 };
