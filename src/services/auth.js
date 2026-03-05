@@ -1,10 +1,11 @@
 import { supabase } from "../utils/supabase.js";
 
-export const PatientSignin=async(name,email,address,phone,password)=>{
+export const PatientSignin=async(name,email,phone,password,address)=>{
     const {data,error}=await supabase.auth.signUp({
        email,
        password,
        phone,
+      
         options: {
         data: {
           role:"patient",
@@ -19,9 +20,9 @@ export const PatientSignin=async(name,email,address,phone,password)=>{
     .insert([{
         id:user.id,
         name,
-        address,
         phone,
         email,
+        address,
     }])
     .select()
     .single();
@@ -131,7 +132,9 @@ export const StaffSignin=async(hospital_id,name,email,phone,password,address)=>{
         session:data.session,
      hospital_staff};
 };
-
+export const Login=async(email,password)=>{
+    
+}
 export const PatientLogin = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
         email,

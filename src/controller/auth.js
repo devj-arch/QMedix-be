@@ -9,7 +9,8 @@ import {
     StaffSignin,
     ApproveDoctor,
     ApproveStaff,
-    RejectRequest
+    RejectRequest,
+    Login
 } from "../services/auth.js";
 
 class Auth{
@@ -53,13 +54,13 @@ class Auth{
 
     Patientsignup=async(req,res,next)=>{
         try {
-          const {name,email,address,phone,password}=req.body;
-        if(!name || !password || !email || !address || !phone){
+          const {name,email,phone,password,address}=req.body;
+        if(!name || !password || !email || !phone){
             return res.status(400).json({
                 message:"All credentials required"
             })
         }
-        const patient=await PatientSignin(name,email,address,phone,password);
+        const patient=await PatientSignin(name,email,phone,password,address);
           const { access_token, refresh_token } = patient.session;
 
     res.cookie("access_token", access_token, {
@@ -196,7 +197,44 @@ class Auth{
             next(error);
         }
     }
+Login=async(req,res,next)=>{
+      try {
+            const { email, password } = req.body;
+            if (!email || !password) {
+                return res.status(400).json({
+                    message: "Email and password required"
+                });
+            }
+            const result = await Login(email, password);
+            const { access_token, refresh_token } = result.session;
 
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+            
+
+                return res.status(200).json({
+                    message: "Login successful",
+                    ...result,
+                    access_token,
+                    refresh_token
+
+                });
+
+        } catch (error) {
+            next(error);
+        }
+}
     Patientlogin = async (req, res, next) => {
         try {
             const { email, password } = req.body;
