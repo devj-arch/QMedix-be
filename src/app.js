@@ -8,18 +8,16 @@ import auth from "./routes/auth.js";
 import patient from "./routes/patient.js";
 import hospitalRoutes from "./routes/hospital.js";
 import staffRoutes from "./routes/staff.js";
-
-
+import { authorize } from "./middleware/roleMiddleware.js";
+import doctorRoutes from "./routes/doctor.js";
 dotenv.config();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 
 
@@ -31,8 +29,10 @@ app.use(cookieParser());
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
+
 app.use("/auth",auth);
 app.use("/patient",patient);
+app.use("/doctor",doctorRoutes);
 app.use("/hospital", hospitalRoutes);
 app.use("/staff", staffRoutes);
 

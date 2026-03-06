@@ -13,7 +13,39 @@ import {
     Login
 } from "../services/auth.js";
 
+import { supabase } from "../utils/supabase.js";
 class Auth{
+    sendotp=async(req,res,next)=>{
+        try {
+             const {email}=req.body;
+          const { data, error } = await supabase.auth.signInWithOtp({
+    email: email
+  })
+  if(error) throw error;
+res.status(200).json({ message: "OTP sent to email" })
+        } catch (error) {
+            next(error);
+        }
+    }
+verifyOTP=async(req,res,next)=>{
+    try {
+  const { email, otp, password } = req.body
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: otp,
+    type: "email"
+  })
+
+  if (error) {
+   throw error;
+  }
+  res.status(200).json({ message: "Email verified" })
+    } catch (error) {
+        next(error);
+    }
+
+}
     approve = async (req, res, next) => {
         let { role, id } = req.params;
         let hospital_id = req.user.id;
