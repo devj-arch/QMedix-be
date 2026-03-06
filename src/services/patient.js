@@ -119,6 +119,7 @@ export const getAppointments = async(patient_id)=>{
     const { data, error } = await supabase
     .from('patient_appointment_view')
     .select()
+    .eq('patient_id',patient_id);
 
     if(error) throw error;
 
