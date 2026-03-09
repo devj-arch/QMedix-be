@@ -8,7 +8,7 @@ import auth from "./routes/auth.js";
 import patient from "./routes/patient.js";
 import hospitalRoutes from "./routes/hospital.js";
 import staffRoutes from "./routes/staff.js";
-import { authorize } from "./middleware/roleMiddleware.js";
+import { authenticate } from "./middleware/authMiddleware.js";
 import doctorRoutes from "./routes/doctor.js";
 dotenv.config();
 
@@ -28,6 +28,13 @@ app.use(cookieParser());
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
+});
+app.get("/me", authenticate, (req, res) => {
+  console.log("me route hitted");
+  res.json({
+    success: true,
+    user: req.user,
+  });
 });
 
 app.use("/auth",auth);

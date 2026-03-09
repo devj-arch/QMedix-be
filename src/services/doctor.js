@@ -109,8 +109,6 @@ const {data,error}=await supabase
 if(error) throw error;
 const nextPatient=await callNext(data.assigned_doctor);
 return nextPatient;
-
-
 };
 
 export const doctorStats=async(doctorId)=>{

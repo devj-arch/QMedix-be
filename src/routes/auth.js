@@ -1,7 +1,7 @@
 import express from "express";
 import Auth from "../controller/auth.js";
 import { authenticate } from "../middleware/authMiddleware.js";
-
+import { supabase } from "../utils/supabase.js";
 const router=express.Router();
 router.post("/send-otp",Auth.sendotp);
 router.post("/verify-otp",Auth.verifyOTP);
@@ -25,4 +25,44 @@ try {
   console.log("error",error);
 }
 })
+
+router.post("/refresh", async (req, res) => {
+
+  const refresh_token = req.cookies.refresh_token;
+
+  if (!refresh_token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { data, error } = await supabase.auth.refreshSession({
+    refresh_token: refresh_token,
+  });
+
+  if (error) {
+    return res.status(403).json({ message: error.message });
+  }
+
+  const { access_token, refresh_token: new_refresh } = data.session;
+
+  // new access token
+  res.cookie("access_token", access_token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    maxAge: 60 * 60 * 1000,
+  });
+
+  // rotated refresh token
+  res.cookie("refresh_token", new_refresh, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.json({
+    message: "Access token refreshed",
+  });
+
+});
 export default router;
