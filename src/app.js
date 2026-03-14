@@ -10,6 +10,8 @@ import hospitalRoutes from "./routes/hospital.js";
 import staffRoutes from "./routes/staff.js";
 import { authenticate } from "./middleware/authMiddleware.js";
 import doctorRoutes from "./routes/doctor.js";
+import globalRoutes from "./routes/global.js";
+
 dotenv.config();
 
 const app = express();
@@ -42,7 +44,7 @@ app.use("/patient",patient);
 app.use("/doctor",doctorRoutes);
 app.use("/hospital", hospitalRoutes);
 app.use("/staff", staffRoutes);
-
+app.use("/global",globalRoutes);
 app.use(errorHandler);
 
 export default app;
