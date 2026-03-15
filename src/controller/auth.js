@@ -12,7 +12,7 @@ import {
     RejectRequest,
     Login
 } from "../services/auth.js";
-
+import { redisClient } from "../utils/redis.js";
 import { supabase } from "../utils/supabase.js";
 class Auth{
     sendotp=async(req,res,next)=>{
@@ -168,7 +168,7 @@ verifyOTP=async(req,res,next)=>{
         }
         const hospital=await HospitalSignin(name,email,phone,password,address);
           const { access_token, refresh_token } = hospital.session;
-
+    await redisClient.del("allHospitals");
     res.cookie("access_token", access_token, {
       httpOnly: true,
       secure: false,

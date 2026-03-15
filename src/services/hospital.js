@@ -1,5 +1,12 @@
 import { supabase } from "../utils/supabase.js";
-
+export const getall=async()=>{
+  const {data,error}=await supabase
+  .from("Hospital")
+  .select("*")
+  if(error) throw error;
+  return data;
+  
+}
 export const getApprovalRequests = async (hospitalId) => {
   const { data, error } = await supabase
     .from("Approval_Requests")

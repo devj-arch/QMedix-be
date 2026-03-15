@@ -11,7 +11,7 @@ import staffRoutes from "./routes/staff.js";
 import { authenticate } from "./middleware/authMiddleware.js";
 import doctorRoutes from "./routes/doctor.js";
 import globalRoutes from "./routes/global.js";
-
+import { connectRedis } from "./utils/redis.js";
 dotenv.config();
 
 const app = express();
@@ -22,11 +22,10 @@ app.use(cors({
 }));
 
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
+connectRedis();
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });

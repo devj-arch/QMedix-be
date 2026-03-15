@@ -13,6 +13,16 @@ function getTodayRange(){
   };
 }
 const { start, end } = getTodayRange();
+export const getAllDoctors=async(hospitalId)=>{
+  const {data,error}=await supabase
+  .from("Doctor")
+  .select("*")
+  .eq("hospital_id",hospitalId)
+
+  if(error) throw error;
+  return data;
+}
+
 export const getDoctorQueue=async(doctorId)=>{
     const {data,error}=await supabase
     .from("Appointment")

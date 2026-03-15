@@ -5,11 +5,43 @@ import {
    emergencyPatient,
    markCompleted,
    markCanceled,
-   doctorStats
+   doctorStats,
+   getAllDoctors
 } from "../services/doctor.js";
-
+import { redisClient } from "../utils/redis.js";
 
 class doctorController{
+
+   getAllDoctors=async(req,res,next)=>{
+      try {
+         const {hospitalId}=req.params;
+         const cacheKey = `doctors:${hospitalId}`;
+
+        const cache = await redisClient.get(cacheKey);
+
+    if(cache){
+      console.log("CACHE HIT");
+      return res.status(200).json({
+         message:"Doctors fetched for hospital",
+        doctors: JSON.parse(cache)
+      });
+    }
+
+         const doctors=await getAllDoctors(hospitalId);
+      await redisClient.set(
+      cacheKey,
+      JSON.stringify(doctors),
+      { EX: 86400 }
+    );
+         return res.status(200).json({
+            message:"Doctors fetched for hospital",
+            doctors
+         })
+   
+      } catch (error) {
+         next(error);
+      }
+   }
     getDoctorQueue=async(req,res,next)=>{
       try {
          const doctorId=req.user.id;
