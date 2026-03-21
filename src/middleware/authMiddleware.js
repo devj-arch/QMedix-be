@@ -16,7 +16,7 @@ export const authorizeRole = (tableName) => {
     try {
       const { data, error } = await supabase
         .from(tableName)
-        .select("id, hospital_id")
+        .select()
         .eq("id", req.user.id)
         .single();
 
