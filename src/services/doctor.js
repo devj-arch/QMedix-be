@@ -28,7 +28,7 @@ export const getDoctorQueue=async(doctorId)=>{
     .from("Appointment")
     .select("*, Patient(name, phone)")
     .eq("assigned_doctor",doctorId)
-    .eq("status", "pending")
+    .eq("status", "waiting")
     .gte("booked_for", start)
     .lte("booked_for", end)
     .order("isEmergency", { ascending: false })
