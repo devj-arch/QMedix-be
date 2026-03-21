@@ -15,7 +15,7 @@ router.post("/login/patient",Auth.Patientlogin);
 router.post("/login/doctor",Auth.Doctorlogin);
 router.post("/login/hospital",Auth.Hospitallogin);
 router.post("/login/hospital-staff",Auth.Stafflogin);
-
+router.get("/me",authenticate,Auth.getMe);
 router.get("/role",authenticate,(req,res)=>{
 try {
   const role=req.user.user_metadata.role;

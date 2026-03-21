@@ -30,13 +30,7 @@ connectRedis();
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
-app.get("/me", authenticate, (req, res) => {
-  console.log("me route hitted");
-  res.json({
-    success: true,
-    user: req.user,
-  });
-});
+
 
 app.use("/auth",auth);
 app.use("/patient",patient);

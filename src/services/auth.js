@@ -341,3 +341,44 @@ export const RejectRequest=async(id,hospital_id)=>{
     return { message: "Request Rejected Successfully." };
 
 };
+
+export const getMe = async (user) => {
+  const role = user.user_metadata?.role;
+
+  let profile = null;
+
+  if (role === "patient") {
+    const { data } = await supabase
+      .from("Patient")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+  }
+
+  else if (role === "doctor") {
+    const { data } = await supabase
+      .from("Doctor")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+  }
+
+  else if (role === "hospital") {
+    const { data } = await supabase
+      .from("Hospital")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+  }
+
+  return({  
+    profile,   
+    role
+  });
+};

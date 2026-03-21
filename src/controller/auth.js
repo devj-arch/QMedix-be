@@ -10,7 +10,8 @@ import {
     ApproveDoctor,
     ApproveStaff,
     RejectRequest,
-    Login
+    Login,
+    getMe
 } from "../services/auth.js";
 import { redisClient } from "../utils/redis.js";
 import { supabase } from "../utils/supabase.js";
@@ -416,6 +417,23 @@ Login=async(req,res,next)=>{
                     refresh_token
                 });
           
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getMe=async(req,res)=>{
+        try {
+             const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const me=await getMe(user);
+  return res.json({
+    message:"user fetched",
+    user:me
+  })
         } catch (error) {
             next(error);
         }
