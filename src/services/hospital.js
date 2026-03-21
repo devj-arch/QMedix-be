@@ -76,3 +76,13 @@ export const getStaffData = async(hospitalId)=>{
   if(error) throw error;
   return data;
 };
+
+export const saveOpd = async(hospitalId,details)=>{
+  const {error} = await supabase
+  .from("Daily_OPDs")
+  .insert({
+    hospital_id:hospitalId,
+    ...details
+  });
+  if(error) throw error;
+};

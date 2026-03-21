@@ -1,7 +1,8 @@
 import { bookAppointment,
     cancelAppointment,
     updateAppointment,
-    getAppointments
+    getAppointments,
+    getBatchPatientDetails
  } from "../services/patient.js";
 
 class Patient{
@@ -51,6 +52,26 @@ class Patient{
             const appts = await getAppointments(patient_id);
             return res.status(200).json(appts);
         }catch(error){
+            next(error);
+        }
+    };
+
+    getBatchDetails = async (req, res, next) => {
+        try {
+            const { ids } = req.body;
+
+            if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({
+                message: "ids array is required",
+            });
+            }
+
+            const patients = await getBatchPatientDetails(ids);
+
+            return res.status(200).json({
+            patients,
+            });
+        } catch (error) {
             next(error);
         }
     };
