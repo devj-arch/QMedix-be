@@ -7,4 +7,5 @@ router.post("/book-appointment",authenticate,patient.bookAppointment);
 router.delete("/cancel-appointment/:appId",authenticate,patient.cancelAppointment);
 router.post("/update-appointment/:appId",authenticate,patient.updateAppointment);
 router.get("/get-appointments",authenticate,patient.getAppointments);
+router.post("/batch-details",authenticate,patient.getBatchDetails);
 export default router;

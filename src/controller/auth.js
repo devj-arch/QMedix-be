@@ -85,42 +85,67 @@ verifyOTP=async(req,res,next)=>{
         }
     };
 
-    Patientsignup=async(req,res,next)=>{
-        try {
-          const {name,email,phone,password,address}=req.body;
-        if(!name || !password || !email || !phone){
-            return res.status(400).json({
-                message:"All credentials required"
-            })
+    Patientsignup = async (req, res, next) => {
+    try {
+        const { name, email, phone, password, address, dob, gender } = req.body;
+
+        if (!name || !password || !email || !phone) {
+        return res.status(400).json({
+            message: "All credentials required",
+        });
         }
-        const patient=await PatientSignin(name,email,phone,password,address);
-          const { access_token, refresh_token } = patient.session;
 
-    res.cookie("access_token", access_token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 1000,
-    });
+        // ✅ Optional DOB validation (DATE type safe)
+        if (dob && isNaN(Date.parse(dob))) {
+        return res.status(400).json({
+            message: "Invalid DOB format (use YYYY-MM-DD)",
+        });
+        }
 
-    res.cookie("refresh_token", refresh_token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+        // ✅ Optional gender validation
+        const allowedGenders = ["male", "female", "other"];
+        if (gender && !allowedGenders.includes(gender.toLowerCase())) {
+        return res.status(400).json({
+            message: "Invalid gender value",
+        });
+        }
+
+        const patient = await PatientSignin(
+        name,
+        email,
+        phone,
+        password,
+        address,
+        dob || null,
+        gender ? gender.toLowerCase() : null
+        );
+
+        const { access_token, refresh_token } = patient.session;
+
+        res.cookie("access_token", access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 1000,
+        });
+
+        res.cookie("refresh_token", refresh_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
         return res.status(200).json({
-        message:"patient signin succesfull",
+        message: "patient signup successful",
         patient,
         access_token,
-        refresh_token
-        })
-
-        } catch (error) {
-            next(error);
-        }
-
+        refresh_token,
+        });
+    } catch (error) {
+        next(error);
     }
+    };
 
     Doctorsignup=async(req,res,next)=>{
         try {
