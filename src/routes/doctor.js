@@ -3,6 +3,6 @@ import express from "express";
 const router=express.Router();
 import doctorController from "../controller/doctor.js";
 import { authenticate } from "../middleware/authMiddleware.js";
-router.get("/all-doctors/:hospitalId",doctorController.getAllDoctors);
+router.get("/all/:hospitalId",doctorController.getAllDoctors);
 router.get("/get-queue",authenticate,authorize("doctor"),doctorController.getDoctorQueue);
 export default router;

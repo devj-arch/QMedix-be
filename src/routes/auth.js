@@ -65,4 +65,29 @@ router.post("/refresh", async (req, res) => {
   });
 
 });
+router.post("/logout",async(req,res)=>{
+ try {
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: false, //remember-- to be set true if https
+      sameSite: "lax"
+    });
+
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax"
+    });
+
+    return res.status(200).json({
+      message: "Logged out successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Logout failed",
+      error: error.message
+    });
+  }
+})
 export default router;

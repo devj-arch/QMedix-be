@@ -14,6 +14,7 @@ class doctorController{
 
    getAllDoctors=async(req,res,next)=>{
       try {
+         console.log("doctor route get");
          const {hospitalId}=req.params;
          const cacheKey = `doctors:${hospitalId}`;
 
