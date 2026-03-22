@@ -422,7 +422,7 @@ Login=async(req,res,next)=>{
         }
     }
 
-    getMe=async(req,res)=>{
+    getMe=async(req,res,next)=>{
         try {
              const user = req.user; 
 

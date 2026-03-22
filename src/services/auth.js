@@ -344,7 +344,6 @@ export const RejectRequest=async(id,hospital_id)=>{
 
 export const getMe = async (user) => {
   const role = user.user_metadata?.role;
-
   let profile = null;
 
   if (role === "patient") {
@@ -365,6 +364,14 @@ export const getMe = async (user) => {
       .single();
 
     profile = data;
+    if(!profile){
+        const {data:pending}=await supabase
+        .from("Approval_Requests")
+        .select("*")
+        .eq("id",user.id)
+        .single();
+        profile=pending;
+    }
   }
 
   else if (role === "hospital") {
