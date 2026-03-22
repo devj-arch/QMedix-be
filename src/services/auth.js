@@ -1,35 +1,50 @@
 import { supabase } from "../utils/supabase.js";
 
-export const PatientSignin=async(name,email,phone,password,address)=>{
-    const {data,error}=await supabase.auth.signUp({
-       email,
-       password,
-       phone,
-      
+export const PatientSignin = async (
+    name,
+    email,
+    phone,
+    password,
+    address,
+    dob,
+    gender
+    ) => {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        phone,
         options: {
         data: {
-          role:"patient",
+            role: "patient",
         },
-      },
+        },
     });
-    if(error) throw error;
-    const user=data.user;
 
-    const {data:Patient,error:err}=await supabase
-    .from("Patient")
-    .insert([{
-        id:user.id,
-        name,
-        phone,
-        email,
-        address,
-    }])
-    .select()
-    .single();
-    if(err) throw err;
+    if (error) throw error;
+
+    const user = data.user;
+
+    const { data: Patient, error: err } = await supabase
+        .from("Patient")
+        .insert([
+        {
+            id: user.id,
+            name,
+            phone,
+            email,
+            address,
+            dob: dob || null,        // ✅ stored as DATE (YYYY-MM-DD)
+            gender: gender || null,  // ✅ stored as text
+        },
+        ])
+        .select()
+        .single();
+
+    if (err) throw err;
+
     return {
-        session:data.session,
-        Patient
+        session: data.session,
+        Patient,
     };
 };
 

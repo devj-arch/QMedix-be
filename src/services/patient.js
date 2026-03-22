@@ -136,3 +136,41 @@ export const getAppointments = async(patient_id)=>{
         data:data
     }
 };
+
+export const getBatchPatientDetails = async (ids) => {
+  const { data, error } = await supabase
+    .from("Patient")
+    .select("id, name, dob, gender, phone")
+    .in("id", ids);
+
+  if (error) throw error;
+
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+
+    const birthDate = new Date(dob);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
+
+  const patients = data.map((p) => ({
+    id: p.id,
+    name: p.name,
+    age: calculateAge(p.dob),
+    dob: p.dob,
+    gender: p.gender
+      ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1)
+      : null,
+    phone: p.phone,
+  }));
+
+  return patients;
+};

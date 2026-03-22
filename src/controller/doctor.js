@@ -1,12 +1,7 @@
 import {
-   getDoctorQueue,
-   currentPatient,
-   callNext,
-   emergencyPatient,
-   markCompleted,
-   markCanceled,
-   doctorStats,
-   getAllDoctors
+   getAllDoctors,
+   markCompleteService,
+   toggle
 } from "../services/doctor.js";
 import { redisClient } from "../utils/redis.js";
 
@@ -43,15 +38,42 @@ class doctorController{
          next(error);
       }
    }
-    getDoctorQueue=async(req,res,next)=>{
-      try {
+
+   markComplete = async (req, res, next) => {
+   try {
+         const { appointmentId, remarks, completed_at, started_at } = req.body;
+
+         if (!appointmentId || !completed_at || !started_at) {
+            return res.status(400).json({
+            success: false,
+            message: "appointmentId, completed_at and started_at are required",
+            });
+         }
+
+         const data = await markCompleteService(appointmentId,remarks,completed_at,started_at);
+
+         return res.status(200).json({
+            success: true,
+            message: "Appointment marked as completed",
+            data,
+         });
+
+   }catch (error) {
+         next(error);
+   }   
+   };
+
+   toggleAvailabilty = async(req,res,next) =>{
+      try{
          const doctorId=req.user.id;
-         const queue=await getDoctorQueue(doctorId);
-         return res.status(200).json({message:"doctor queue fetched",queue});
-      } catch (error) {
+         const res = await toggle(doctorId);
+         return res.status(200).json({
+            message:"Doctor Availability toggled."
+         })
+      }catch(error){
          next(error);
       }
-    }
+   };
 };
 
 export default new doctorController();
