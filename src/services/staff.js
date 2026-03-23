@@ -1,31 +1,43 @@
 import { supabase } from "../utils/supabase.js";
 
-export const bookWalkInAppointment = async (appointmentData) => {
-  const { data, error } = await supabase
-    .from("Appointment")
-    .insert([appointmentData])
+export const cancelAppointment = async(AppointmentId) => {
+    const {data,error} = await supabase
+    .from('Appointment')
+    .delete()
+    .eq('id', AppointmentId)
     .select();
-  if (error) throw error;
-  return data;
+
+    if(error) throw error;
+    if(!data || data.length===0){
+        return {
+            message:"No such appointment exists."
+        }
+    }
+
+    return{
+        message:"Appointment deleted successfully.",
+        details:data
+    }
 };
 
-export const getQueue = async (hospitalId) => {
-  const { data, error } = await supabase
-    .from("Appointment")
-    .select("*, Patient(name, phone), Doctor(name, speciality)")
-    .eq("hospital_id", hospitalId)
-    .order("isEmergency", { ascending: false })
-    .order("created_at", { ascending: true });
-  if (error) throw error;
-  return data;
+export const toggleEmergency = async(AppointmentId) => {
+  const { data,error } = await supabase
+  .from('Appointment')
+  .select('isEmergency')
+  .eq('id', AppointmentId)
+  .single();
+
+  if(error) throw error;
+
+  const {error:toggleError} = await supabase
+  .from('Appointment')
+  .update({isEmergency:!data.isEmergency})
+  .eq('id',AppointmentId);
+
+  if(toggleError) throw toggleError;
+
+  return{
+    message:"Appointment Emergency status toggled successfully."
+  }
 };
 
-export const updateAppointmentStatus = async (appointmentId, updates) => {
-  const { data, error } = await supabase
-    .from("Appointment")
-    .update(updates)
-    .eq("id", appointmentId)
-    .select();
-  if (error) throw error;
-  return data;
-};
