@@ -77,12 +77,12 @@ export const getStaffData = async(hospitalId)=>{
   return data;
 };
 
-export const saveOpd = async(hospitalId,details)=>{
+export const saveOpd = async(hospitalId,payload)=>{
   const {error} = await supabase
   .from("Daily_OPDs")
   .insert({
     hospital_id:hospitalId,
-    ...details
+    ...payload
   });
   if(error) throw error;
 };

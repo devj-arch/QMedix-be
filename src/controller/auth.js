@@ -58,7 +58,7 @@ verifyOTP=async(req,res,next)=>{
                 const approval = await ApproveDoctor(id, hospital_id);
                 return res.status(200).json(approval);
             } 
-            else if (role === "hospital-staff") {
+            else if (role === "staff") {
                 const approval = await ApproveStaff(id, hospital_id);
                 return res.status(200).json(approval);
             } 
