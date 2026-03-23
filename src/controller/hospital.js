@@ -91,7 +91,7 @@ export const getAllStaffDetails = async (req, res, next) => {
 export const saveOpd = async(req,res,next) => {
   try{
     const hospital_id=req.user.id;
-    const res = await adminService.saveOpd(hospital_id,req.body);
+    const resp = await adminService.saveOpd(hospital_id,req.body);
     return res.status(200).json({message:"OPD Saved Successfully."});
   }catch(error){
     next(error);

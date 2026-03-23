@@ -3,7 +3,7 @@ import { supabase } from "../utils/supabase.js";
 export const getAllDoctors=async(hospitalId)=>{
   const {data,error}=await supabase
   .from("Doctor")
-  .select("*")
+  .select()
   .eq("hospital_id",hospitalId)
 
   if(error) throw error;
