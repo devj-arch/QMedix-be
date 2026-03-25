@@ -9,7 +9,7 @@ class doctorController{
 
    getAllDoctors=async(req,res,next)=>{
       try {
-         console.log("doctor route get");
+      
          const {hospitalId}=req.params;
          const cacheKey = `doctors:${hospitalId}`;
 
@@ -23,7 +23,7 @@ class doctorController{
       });
     }
 
-         const doctors=await getAllDoctors(hospitalId);
+      const doctors=await getAllDoctors(hospitalId);
       await redisClient.set(
       cacheKey,
       JSON.stringify(doctors),
@@ -35,6 +35,7 @@ class doctorController{
          })
    
       } catch (error) {
+        
          next(error);
       }
    }

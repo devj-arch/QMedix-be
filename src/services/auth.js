@@ -400,7 +400,7 @@ export const getMe = async (user) => {
   }
 
   return({  
-    profile,   
+    ...profile,   
     role
   });
 };
