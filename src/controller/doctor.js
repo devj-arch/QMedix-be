@@ -27,7 +27,7 @@ class doctorController{
       await redisClient.set(
       cacheKey,
       JSON.stringify(doctors),
-      { EX: 86400 }
+      { EX: 300 }
     );
          return res.status(200).json({
             message:"Doctors fetched for hospital",
@@ -67,7 +67,7 @@ class doctorController{
    toggleAvailabilty = async(req,res,next) =>{
       try{
          const doctorId=req.user.id;
-         const res = await toggle(doctorId);
+         const resp = await toggle(doctorId);
          return res.status(200).json({
             message:"Doctor Availability toggled."
          })
