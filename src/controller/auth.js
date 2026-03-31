@@ -223,13 +223,13 @@ verifyOTP=async(req,res,next)=>{
 
     Staffsignup=async(req,res,next)=>{
         try{
-            const {hospital_id,name,email,phone,password,address}=req.body;
+            const {hospital_id,name,email,phone,password,address,dept}=req.body;
             if(!hospital_id || !name || !password || !email || !phone || !address){
                     return res.status(400).json({
                         message:"All credentials required"
                     })
             }
-            const staff=await StaffSignin(hospital_id,name,email,phone,password,address);
+            const staff=await StaffSignin(hospital_id,name,email,phone,password,address,dept);
               const { access_token, refresh_token } = staff.session;
 
     res.cookie("access_token", access_token, {
