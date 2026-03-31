@@ -3,7 +3,8 @@ import {
   toggleEmergency,
   approveEmergency,
   rejectEmergency,
-  getEmergency
+  getEmergency,
+  registerWalkIn
 }from "../services/staff.js";
 
 class Staff{
@@ -56,6 +57,16 @@ class Staff{
       next(error);
     }
   }
+
+  registerWalkIn = async(req,res,next)=>{
+    try{
+      const data=await registerWalkIn(req.body);
+      return res.status(201).json(data);
+    }catch(error){
+      next(error);
+    }
+  }
+
 };
 
 export default new Staff();   
