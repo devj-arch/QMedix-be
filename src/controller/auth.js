@@ -11,6 +11,7 @@ import {
     ApproveStaff,
     RejectRequest,
     Login,
+    updateProfile,
     getMe
 } from "../services/auth.js";
 import { redisClient } from "../utils/redis.js";
@@ -446,7 +447,21 @@ Login=async(req,res,next)=>{
             next(error);
         }
     }
-
+updateUser=async(req,res,next)=>{
+    try {
+        const id=req.user.id;
+      
+        const role=req.user.user_metadata.role;
+        //   console.log(role);
+        const data=req.body;
+        const resp=await updateProfile(id,role,data);
+        return res.status(201).json({
+            message:"Profile updated"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
     getMe=async(req,res,next)=>{
         try {
              const user = req.user; 

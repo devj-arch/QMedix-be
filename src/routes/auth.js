@@ -2,6 +2,7 @@ import express from "express";
 import Auth from "../controller/auth.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import { supabase } from "../utils/supabase.js";
+import auth from "../controller/auth.js";
 const router=express.Router();
 router.post("/send-otp",Auth.sendotp);
 router.post("/verify-otp",Auth.verifyOTP);
@@ -16,6 +17,7 @@ router.post("/login/doctor",Auth.Doctorlogin);
 router.post("/login/hospital",Auth.Hospitallogin);
 router.post("/login/hospital-staff",Auth.Stafflogin);
 router.get("/me",authenticate,Auth.getMe);
+router.put("/update",authenticate,Auth.updateUser)
 router.get("/role",authenticate,(req,res)=>{
 try {
   const role=req.user.user_metadata.role;

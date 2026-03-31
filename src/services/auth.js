@@ -369,6 +369,46 @@ export const RejectRequest=async(id,hospital_id)=>{
     return { message: "Request Rejected Successfully." };
 
 };
+export const updateProfile = async (userId, role, newdata) => {
+  const table = {
+    patient: "Patient",
+    doctor: "Doctor",
+    admin: "Hospital",
+    staff: "Staff",
+    hospital: "Hospital"
+  };
+
+
+
+    // if (newdata.email) {
+    //   const { error: authError } = await supabase.auth.admin.updateUserById(
+    //     userId,
+    //     { email: newdata.email }
+    //   );
+
+    //   if (authError) throw authError;
+    // }
+
+    // const { email, ...dbData } = newdata;
+
+   
+    if (Object.keys(newdata).length > 0) {
+      const { data, error } = await supabase
+        .from(table[role])
+        .update(newdata)
+        .eq("id", userId) 
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    }
+
+   
+
+  
+};
 
 export const getMe = async (user) => {
   const role = user.user_metadata?.role;
