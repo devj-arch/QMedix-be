@@ -411,7 +411,14 @@ export const getMe = async (user) => {
 
     profile = data;
   }
-
+  else{
+    const {data} = await supabase
+    .from("Staff")
+    .select()
+    .eq('id',user.id)
+    .single();
+    profile=data;
+  }
   return({  
     ...profile,   
     role
