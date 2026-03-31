@@ -67,24 +67,34 @@ export const bookAppointment = async (details) => {
   const tentativeTime = new Date(slotBase.getTime() + minutesToAdd * 60 * 1000);
   const tentativeISO  = tentativeTime.toISOString();
 
-  const { data, error } = await supabase
+  const { data:booked_appointment, error } = await supabase
     .from('Appointment')
     .insert({
       pref_doctor:     pref_doctor,
       assigned_doctor: assigned_doctor,
       hospital_id:     hospital_id,
-      isEmergency:     isEmergency,
       patient_id:      patient_id,
       booked_for:      tentativeISO,
       status: 'waiting',
     })
-    .select();
+    .select()
+    .single();
 
   if (error) throw error;
 
+  if(isEmergency){
+    const {error:emergency_error} = await supabase
+    .from('Emergency_Requests')
+    .insert({
+      appointment_id:booked_appointment.id,
+    })
+
+    if(emergency_error) throw emergency_error;
+  }
+
   return {
     message: 'Appointment booked successfully',
-    details: data,
+    details: booked_appointment,
   };
 };
 
