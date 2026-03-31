@@ -2,7 +2,8 @@ import {
   cancelAppointment,
   toggleEmergency,
   approveEmergency,
-  rejectEmergency
+  rejectEmergency,
+  getEmergency
 }from "../services/staff.js";
 
 class Staff{
@@ -10,7 +11,7 @@ class Staff{
     try{
       const AppointmentId=req.params.appId;
       const data=await cancelAppointment(AppointmentId);
-      res.status(200).json(data);
+      return res.status(200).json(data);
     }catch(error){
       next(error);
     }
@@ -20,7 +21,7 @@ class Staff{
     try{
       const AppointmentId=req.params.appId;
       const data=await toggleEmergency(AppointmentId);
-      res.status(201).json(data);
+      return res.status(201).json(data);
     }catch(error){
       next(error);
     }
@@ -30,7 +31,7 @@ class Staff{
     try{
       const appointmentId=req.params.appId;
       const approval = await approveEmergency(appointmentId);
-      res.status(201).json(approval);
+      return res.status(201).json(approval);
     }catch(error){
       next(error);
     }
@@ -40,7 +41,17 @@ class Staff{
     try{
       const appointmentId=req.params.appId;
       const rejection = await rejectEmergency(appointmentId);
-      res.status(201).json(rejection);
+      return res.status(201).json(rejection);
+    }catch(error){
+      next(error);
+    }
+  }
+
+  getEmergency = async(req,res,next)=>{
+    try{
+      const hospital_id=req.params.hId;
+      const data = await getEmergency(hospital_id);
+      return res.status(200).json(data);
     }catch(error){
       next(error);
     }
