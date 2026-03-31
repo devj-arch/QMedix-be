@@ -1,6 +1,8 @@
 import {
   cancelAppointment,
-  toggleEmergency
+  toggleEmergency,
+  approveEmergency,
+  rejectEmergency
 }from "../services/staff.js";
 
 class Staff{
@@ -23,6 +25,26 @@ class Staff{
       next(error);
     }
   };
+
+  approveEmergency = async(req,res,next) =>{
+    try{
+      const appointmentId=req.params.appId;
+      const approval = await approveEmergency(appointmentId);
+      res.status(201).json(approval);
+    }catch(error){
+      next(error);
+    }
+  };
+
+  rejectEmergency = async(req,res,next) =>{
+    try{
+      const appointmentId=req.params.appId;
+      const rejection = await rejectEmergency(appointmentId);
+      res.status(201).json(rejection);
+    }catch(error){
+      next(error);
+    }
+  }
 };
 
 export default new Staff();   
