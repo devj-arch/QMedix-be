@@ -37,23 +37,25 @@ export const markCompleteService = async (appointmentId,remarks,completed_at,sta
   return data;
 };
 
-export const toggle = async(doctorId) =>{
-  const {initial,err} = await supabase
-  .from("Doctor")
-  .select("isAvailable")
-  .eq("id",doctorId);
+export const toggle = async (doctorId) => {
+  const { data, error } = await supabase
+    .from("Doctor")
+    .select("isAvailable, hospital_id")
+    .eq("id", doctorId)
+    .single();  
 
-  if(err) throw err;
+  if (error) throw error;
 
-  const {data,error} = await supabase
-  .from("Doctor")
-  .update({
-    isAvailable:!initial
-  })
-  .eq("id",doctorId)
-  .select();
+  const { isAvailable, hospital_id } = data;
 
-  if(error) throw error;
+  const { error: updateError } = await supabase
+    .from("Doctor")
+    .update({
+      isAvailable: !isAvailable
+    })
+    .eq("id", doctorId);
 
-  return ""; 
-}
+  if (updateError) throw updateError;
+
+  return hospital_id;
+};

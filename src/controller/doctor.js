@@ -67,7 +67,16 @@ class doctorController{
    toggleAvailabilty = async(req,res,next) =>{
       try{
          const doctorId=req.user.id;
+         // console.log(req.user);
+         if(req.user.user_metadata.role!="doctor"){
+            return res.status(400).json({
+               message:"Unauthorized"
+            })
+         }
+        
          const resp = await toggle(doctorId);
+          await redisClient.del(`doctors:${resp}`)
+           console.log("cache deleted")
          return res.status(200).json({
             message:"Doctor Availability toggled."
          })

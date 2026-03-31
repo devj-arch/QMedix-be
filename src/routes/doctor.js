@@ -5,5 +5,5 @@ import doctorController from "../controller/doctor.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 router.get("/all/:hospitalId",doctorController.getAllDoctors);
 router.post("/mark-complete",doctorController.markComplete);
-router.post("/toggle-availability",doctorController.toggleAvailabilty);
+router.post("/toggle-availability",authenticate,doctorController.toggleAvailabilty);
 export default router;

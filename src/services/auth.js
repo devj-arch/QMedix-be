@@ -179,14 +179,26 @@ export const DoctorLogin = async (email, password) => {
         password
     });
     if (error) throw error;
-
+     
     const { data: doctor, error: err } = await supabase
         .from("Doctor")
         .select("*")
         .eq("id", data.user.id)
         .single();
+   
+if(err && err.code==="PGRST116"){
+    console.log(err);
+const {data:d,error:er}=await supabase
+.from("Approval_Requests")
+.select("*")
+.eq("id", data.user.id)
+.single();
+if(er) throw er;
 
+return data;
+}
     if (err) throw err;
+
 
     return {
         userId: data.user.id,
@@ -208,6 +220,7 @@ export const HospitalLogin = async (email, password) => {
         .select("*")
         .eq("id", data.user.id)
         .single();
+
 
     if (err) throw err;
 
