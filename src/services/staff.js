@@ -81,3 +81,11 @@ export const rejectEmergency = async(AppointmentId) =>{
     }
 }
 
+export const getEmergency = async (hospitalId) => {
+  const { data, error } = await supabase
+    .from("emergency_requests_view")
+    .select()
+    .eq('hospital_id', hospitalId);
+  if (error) throw error;
+  return data;
+};
