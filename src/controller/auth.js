@@ -158,7 +158,7 @@ verifyOTP=async(req,res,next)=>{
         }
         const doctor=await DoctorSignin(name,email,address,phone,password,speciality,hospital_id);
           const { access_token, refresh_token } = doctor.session;
-
+   await redisClient.del(`doctor:${hospital_id}`);
     res.cookie("access_token", access_token, {
       httpOnly: true,
       secure: false,
