@@ -115,7 +115,7 @@ export const HospitalSignin=async(name,email,phone,password,address)=>{
     };
 };
 
-export const StaffSignin=async(hospital_id,name,email,phone,password,address)=>{
+export const StaffSignin=async(hospital_id,name,email,phone,password,address,dept)=>{
     const {data,error}=await supabase.auth.signUp({
        email,
        password,
@@ -138,7 +138,8 @@ export const StaffSignin=async(hospital_id,name,email,phone,password,address)=>{
         name:name,
         phone:phone,
         address:address,
-        email:email
+        email:email,
+        speciality:dept
     })
     .select()
     .single();
@@ -321,7 +322,7 @@ export const ApproveStaff=async(id,hospital_id)=>{
 
     if(error) throw error;
 
-    const {name,address,phone,email}=details;
+    const {name,address,phone,email,speciality}=details;
 
     const {data:hospital_staff,error:err1}=await supabase
     .from("Staff")
@@ -331,7 +332,8 @@ export const ApproveStaff=async(id,hospital_id)=>{
         phone,
         name,
         address,
-        email
+        email,
+        department:speciality
     }])
     .select()
     .maybeSingle();
