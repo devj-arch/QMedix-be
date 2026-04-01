@@ -224,13 +224,13 @@ verifyOTP=async(req,res,next)=>{
 
     Staffsignup=async(req,res,next)=>{
         try{
-            const {hospital_id,name,email,phone,password,address,dept}=req.body;
-            if(!hospital_id || !name || !password || !email || !phone || !address){
+            const {hospital_id,name,email,phone,password,dept}=req.body;
+            if(!hospital_id || !name || !password || !email || !phone){
                     return res.status(400).json({
                         message:"All credentials required"
                     })
             }
-            const staff=await StaffSignin(hospital_id,name,email,phone,password,address,dept);
+            const staff=await StaffSignin(hospital_id,name,email,phone,password,dept);
               const { access_token, refresh_token } = staff.session;
 
     res.cookie("access_token", access_token, {
@@ -374,7 +374,7 @@ Login=async(req,res,next)=>{
 
     Hospitallogin = async (req, res, next) => {
         try {
-            console.log(req.body);
+            // console.log(req.body);
             const { email, password } = req.body;
             if (!email || !password) {
                 return res.status(400).json({
@@ -383,7 +383,7 @@ Login=async(req,res,next)=>{
             }
             const result = await HospitalLogin(email, password);
             const { access_token, refresh_token } = result.session;
-            console.log(access_token);
+            // console.log(access_token);
     res.cookie("access_token", access_token, {
       httpOnly: true,
       secure: false,

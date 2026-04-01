@@ -115,7 +115,7 @@ export const HospitalSignin=async(name,email,phone,password,address)=>{
     };
 };
 
-export const StaffSignin=async(hospital_id,name,email,phone,password,address,dept)=>{
+export const StaffSignin=async(hospital_id,name,email,phone,password,dept)=>{
     const {data,error}=await supabase.auth.signUp({
        email,
        password,
@@ -137,7 +137,6 @@ export const StaffSignin=async(hospital_id,name,email,phone,password,address,dep
         hospital_id:hospital_id,
         name:name,
         phone:phone,
-        address:address,
         email:email,
         speciality:dept
     })
