@@ -1,68 +1,79 @@
 import request from 'supertest';
 import app from '../app.js';
 
-describe ('Appointment API - BlackBox',()=>{
+describe('Appointment API - BlackBox', () => {
 
-    let cookies;
+  let cookies;
+  let createdAppointmentId; // track so we can clean up after the test run
 
-    beforeAll(async () => {
-        const res = await request(app)
-        .post('/auth/login/patient')
-        .send({
-            email: 'patient@test.com',
-            password: 'QMedix@123'
-        });
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/auth/login/patient')
+      .send({ email: 'patient@test.com', password: 'QMedix@123' });
 
-        cookies = res.headers['set-cookie']; 
-    });
+    cookies = res.headers['set-cookie'];
+  });
 
-    test('Book appointment WITHOUT login should fail', async () => {
-        const today = new Date().toISOString().split('T')[0];
-        const hours = Math.floor(Math.random() * 8) + 9; 
-        const minutes = Math.random() < 0.5 ? '00' : '30';
-        const meridiem = hours >= 12 ? 'PM' : 'AM';
-        const formattedHour = hours > 12 ? hours - 12 : hours;
-        const timeSlot = `${formattedHour}:${minutes} ${meridiem}`;
+  // Cancel the appointment created during the test.
+  // Without this, every run accumulates junk appointments in the test DB.
+  afterAll(async () => {
+    if (createdAppointmentId && cookies) {
+      await request(app)
+        .post('/patient/cancel-appointment')
+        .set('Cookie', cookies)
+        .send({ appointmentId: createdAppointmentId });
+    }
+  });
 
-        const res = await request(app)
-            .post('/patient/book-appointment')
-            .send({
-            pref_doctor: "b3c1e2a4-1234-4abc-9d12-abcdef123456",
-            hospital_id: "ec19a666-7597-434c-9cf8-26e59b74c269",
-            department: "Cardiology",
-            bookingDate: today,
-            timeSlot: timeSlot,
-            isEmergency: false
-            });
+  test('Book appointment WITHOUT login should fail', async () => {
+    const today = new Date().toISOString().split('T')[0];
+    const hours = Math.floor(Math.random() * 8) + 9;
+    const minutes = Math.random() < 0.5 ? '00' : '30';
+    const meridiem = hours >= 12 ? 'PM' : 'AM';
+    const formattedHour = hours > 12 ? hours - 12 : hours;
+    const timeSlot = `${formattedHour}:${minutes} ${meridiem}`;
 
-        expect(res.statusCode).toBeGreaterThanOrEqual(401);
-    });
+    const res = await request(app)
+      .post('/patient/book-appointment')
+      .send({
+        pref_doctor: 'b3c1e2a4-1234-4abc-9d12-abcdef123456',
+        hospital_id: 'ec19a666-7597-434c-9cf8-26e59b74c269',
+        department: 'Cardiology',
+        bookingDate: today,
+        timeSlot,
+        isEmergency: false,
+      });
 
-    test('Book appointment WITH login should succeed', async () => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const bookingDate = tomorrow.toISOString().split('T')[0];
-        const hours = Math.floor(Math.random() * 8) + 9;
-        const minutes = Math.random() < 0.5 ? '00' : '30';
+    expect(res.statusCode).toBeGreaterThanOrEqual(401);
+  });
 
-        const meridiem = hours >= 12 ? 'PM' : 'AM';
-        const formattedHour = hours > 12 ? hours - 12 : hours;
+  test('Book appointment WITH login should succeed', async () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const bookingDate = tomorrow.toISOString().split('T')[0];
 
-        const timeSlot = `${formattedHour}:${minutes} ${meridiem}`;
+    const hours = Math.floor(Math.random() * 8) + 9;
+    const minutes = Math.random() < 0.5 ? '00' : '30';
+    const meridiem = hours >= 12 ? 'PM' : 'AM';
+    const formattedHour = hours > 12 ? hours - 12 : hours;
+    const timeSlot = `${formattedHour}:${minutes} ${meridiem}`;
 
-        const res = await request(app)
-            .post('/patient/book-appointment')
-            .set('Cookie', cookies)
-            .send({
-            pref_doctor: "b3c1e2a4-1234-4abc-9d12-abcdef123456",
-            hospital_id: "830b30cf-4ac3-4153-a156-2adbab8f5a48",
-            department: "General",
-            bookingDate,
-            timeSlot,
-            isEmergency: false
-            });
+    const res = await request(app)
+      .post('/patient/book-appointment')
+      .set('Cookie', cookies)
+      .send({
+        pref_doctor: 'b3c1e2a4-1234-4abc-9d12-abcdef123456',
+        hospital_id: '830b30cf-4ac3-4153-a156-2adbab8f5a48',
+        department: 'General',
+        bookingDate,
+        timeSlot,
+        isEmergency: false,
+      });
 
-        expect([200, 201]).toContain(res.statusCode);
-    });
-})
+    expect([200, 201]).toContain(res.statusCode);
 
+    // Capture for cleanup in afterAll
+    createdAppointmentId = res.body.appointmentId ?? res.body.id ?? res.body.appointment?.id;
+  });
+
+});
