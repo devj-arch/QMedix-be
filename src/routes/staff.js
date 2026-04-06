@@ -9,7 +9,7 @@ router.use(authenticate, authorizeRole("Staff"));
 router.delete("/cancel-appointment/:appId",staffSevice.cancelAppointment);
 router.post("/toggle-emergency/:appId",staffSevice.toggleEmergency);
 router.post("/approve-emergency/:appId",staffSevice.approveEmergency);
-router.post("/reject-emergency/:appId",staffSevice.approveEmergency);
+router.post("/reject-emergency/:appId",staffSevice.rejectEmergency);
 router.get("/emergency-requests/:hId",staffSevice.getEmergency);
 router.post("/register-walkin",staffSevice.registerWalkIn);
 
